@@ -1,30 +1,87 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:covid19staticstics/main.dart';
+import 'package:xml/xml.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  final bookshelfXml =
+      '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <response>
+<header>
+<resultCode>00</resultCode>
+<resultMsg>NORMAL SERVICE.</resultMsg>
+</header>
+<body>
+<items>
+<item>
+<createDt>2022-06-03 09:08:18.729</createDt>
+<deathCnt>24229</deathCnt>
+<decideCnt>18141803</decideCnt>
+<seq>899</seq>
+<stateDt>20220603</stateDt>
+<stateTime>00:00</stateTime>
+<updateDt>2022-06-04 08:58:37.902</updateDt>
+</item>
+<item>
+<createDt>2022-06-02 08:58:19.746</createDt>
+<deathCnt>24212</deathCnt>
+<decideCnt>18129261</decideCnt>
+<seq>898</seq>
+<stateDt>20220602</stateDt>
+<stateTime>00:00</stateTime>
+<updateDt>2022-06-04 08:58:54.426</updateDt>
+</item>
+</items>
+<numOfRows>10</numOfRows>
+<pageNo>1</pageNo>
+<totalCount>2</totalCount>
+</body>
+</response>''';
+  final document = XmlDocument.parse(bookshelfXml);
+  final items = document.findAllElements('item');
+  List<CovidStaticsticsModel> covidStatics = [];
+  items.forEach((element) {
+    covidStatics.add(CovidStaticsticsModel.fromXml(element));
   });
+  print(covidStatics.length);
+  covidStatics.forEach((element) {
+    print('${element.deathCnt}');
+  });
+}
+
+class CovidStaticsticsModel {
+  String? createDt;
+  String? deathCnt;
+  String? decideCnt;
+  String? seq;
+  String? stateDt;
+  String? stateTime;
+  String? updateDt;
+
+  CovidStaticsticsModel({
+    this.createDt,
+    this.deathCnt,
+    this.decideCnt,
+    this.seq,
+    this.stateDt,
+    this.stateTime,
+    this.updateDt,
+  });
+
+  factory CovidStaticsticsModel.fromXml(XmlElement xmlElement) {
+    return CovidStaticsticsModel(
+      createDt: XmlUtils.searchResult(xmlElement, 'createDt'),
+      deathCnt: XmlUtils.searchResult(xmlElement, 'deathCnt'),
+      decideCnt: XmlUtils.searchResult(xmlElement, 'decideCnt'),
+      seq: XmlUtils.searchResult(xmlElement, 'seq'),
+      stateDt: XmlUtils.searchResult(xmlElement, 'stateDt'),
+      stateTime: XmlUtils.searchResult(xmlElement, 'stateTime'),
+      updateDt: XmlUtils.searchResult(xmlElement, 'updateDt'),
+    );
+  }
+}
+
+class XmlUtils {
+  static String searchResult(XmlElement xml, String key) {
+    return xml.findAllElements(key).map((e) => e.text).isEmpty
+        ? ''
+        : xml.findAllElements(key).map((e) => e.text).first;
+  }
 }
