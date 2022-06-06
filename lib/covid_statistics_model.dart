@@ -1,4 +1,4 @@
-import 'package:covid19staticstics/xmlutils.dart';
+import 'package:covid19staticstics/utils/xmlutils.dart';
 import 'package:xml/xml.dart';
 
 class CovidStaticsticsModel {

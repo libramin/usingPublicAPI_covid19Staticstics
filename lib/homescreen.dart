@@ -1,4 +1,7 @@
+import 'package:covid19staticstics/canvas/arrow_clip_path.dart';
+import 'package:covid19staticstics/utils/data_utils.dart';
 import 'package:covid19staticstics/widget/chart.dart';
+import 'package:covid19staticstics/widget/covid_statistics_viewer.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -6,15 +9,21 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    Size _size = MediaQuery
+        .of(context)
+        .size;
     double _sizeWidth = _size.width;
-    double appBarHeight = MediaQuery.of(context).padding.top;
+    double appBarHeight = MediaQuery
+        .of(context)
+        .padding
+        .top;
 
     return Scaffold(
       backgroundColor: Colors.pink[100],
       appBar: AppBar(
         leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
-        title: Text('코로나 일별 현황',style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text(
+          '코로나 일별 현황', style: TextStyle(fontWeight: FontWeight.bold),),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.notifications_none))
         ],
@@ -38,47 +47,29 @@ class HomeScreen extends StatelessWidget {
             top: 0,
             child: Center(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.pink[300],
-                  borderRadius: BorderRadius.circular(10)
+                    color: Colors.pink[300],
+                    borderRadius: BorderRadius.circular(10)
                 ),
                 child: Text('00.00 00:00 기준',
-                style: TextStyle(color: Colors.white),),
+                  style: TextStyle(color: Colors.white),),
               ),
             ),
           ),
           Positioned(
             right: appBarHeight * 0.5,
             top: appBarHeight * 1.3,
-            child: Column(
-              children: [
-                Text(
-                  '확진자 수',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                Row(
-                  children: [
-                    Container(
-                      color: Colors.red,
-                      width: appBarHeight * 0.5,
-                      height: appBarHeight * 0.5,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      '1,687',
-                      style: Theme.of(context).textTheme.headline3,
-                    ),
-                  ],
-                ),
-                Text(
-                  '1238',
-                  style: Theme.of(context).textTheme.headline6,
-                )
-              ],
-            ),
+            child: CovidStatisticsViewer(
+              dense: false,
+              title: '확진자',
+              titleColor: Colors.black87.withOpacity(0.6),
+              upDown: ArrowDirection.UP,
+              addedCount: DataUtils.numFormat(18762),
+              totalCount: DataUtils.numFormat(23491),
+              subValueColor: Colors.black87.withOpacity(0.6),
+              appBarHeight: appBarHeight,
+           ),
           ),
           Positioned(
             top: _sizeWidth / 1.8,
@@ -96,23 +87,36 @@ class HomeScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildColumn(context, '확진자 수'),
-                        _buildColumn(context, '검사 중'),
-                        _buildColumn(context, '사망자'),
+                        CovidStatisticsViewer(
+                            title: '격리해제',
+                            addedCount: DataUtils.numFormat(1040),
+                            totalCount: DataUtils.numFormat(16532),
+                            upDown: ArrowDirection.UP),
+                        CovidStatisticsViewer(
+                            title: '검사 중',
+                            addedCount: DataUtils.numFormat(3341.0),
+                            totalCount: DataUtils.numFormat(285734),
+                            upDown: ArrowDirection.DOWN),
+                        CovidStatisticsViewer(
+                            title: '사망자',
+                            addedCount: DataUtils.numFormat(2),
+                            totalCount: DataUtils.numFormat(2039),
+                            upDown: ArrowDirection.MIDDLE),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Text(
                       '확진자 추이',
-                      style: Theme.of(context)
+                      style: Theme
+                          .of(context)
                           .textTheme
                           .headline6!
                           .copyWith(fontWeight: FontWeight.bold),
                     ),
                     Expanded(
-                        child: Test()),
+                        child: CovidChart()),
                   ],
                 ),
               ),
@@ -120,37 +124,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Column _buildColumn(BuildContext context, String title,) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.subtitle1,
-        ),
-        Row(
-          children: [
-            Container(
-              color: Colors.red,
-              width: 20,
-              height: 20,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              '1,687',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ],
-        ),
-        Text(
-          '1238',
-          style: Theme.of(context).textTheme.subtitle1,
-        )
-      ],
     );
   }
 }
