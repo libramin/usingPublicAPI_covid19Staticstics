@@ -1,10 +1,8 @@
-import 'package:covid19staticstics/covid_statistics_cotroller.dart';
+import 'package:covid19staticstics/controller/covid_statistics_cotroller.dart';
 import 'package:covid19staticstics/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-
-import 'App.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: const HomeScreen(),
+      home : const HomeScreen()
     );
   }
 }

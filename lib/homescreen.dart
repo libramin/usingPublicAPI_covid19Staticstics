@@ -1,31 +1,28 @@
-import 'package:covid19staticstics/canvas/arrow_clip_path.dart';
-import 'package:covid19staticstics/utils/data_utils.dart';
+import 'package:covid19staticstics/controller/covid_statistics_cotroller.dart';
 import 'package:covid19staticstics/widget/chart.dart';
 import 'package:covid19staticstics/widget/covid_statistics_viewer.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends GetView<CovidStatisticsController> {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery
-        .of(context)
-        .size;
+    Size _size = MediaQuery.of(context).size;
     double _sizeWidth = _size.width;
-    double appBarHeight = MediaQuery
-        .of(context)
-        .padding
-        .top;
+    double appBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: Colors.pink[100],
       appBar: AppBar(
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
-        title: Text(
-          '코로나 일별 현황', style: TextStyle(fontWeight: FontWeight.bold),),
+        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+        title: const Text(
+          '코로나 일별 현황',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications_none))
+          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none))
         ],
         centerTitle: true,
         elevation: 0,
@@ -35,7 +32,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           Positioned(
               left: -_sizeWidth / 6,
-              top: appBarHeight * 1.5,
+              top: appBarHeight * 0.2,
               child: Image.asset(
                 'assets/virus.png',
                 width: _sizeWidth * 0.7,
@@ -47,32 +44,19 @@ class HomeScreen extends StatelessWidget {
             top: 0,
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                 decoration: BoxDecoration(
                     color: Colors.pink[300],
-                    borderRadius: BorderRadius.circular(10)
-                ),
-                child: Text('00.00 00:00 기준',
-                  style: TextStyle(color: Colors.white),),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Obx(() => Text(
+                    controller.todayData.value.standardDayString,
+                    style: TextStyle(color: Colors.white))),
               ),
             ),
           ),
           Positioned(
-            right: appBarHeight * 0.5,
-            top: appBarHeight * 1.3,
-            child: CovidStatisticsViewer(
-              dense: false,
-              title: '확진자',
-              titleColor: Colors.black87.withOpacity(0.6),
-              upDown: ArrowDirection.UP,
-              addedCount: DataUtils.numFormat(18762),
-              totalCount: DataUtils.numFormat(23491),
-              subValueColor: Colors.black87.withOpacity(0.6),
-              appBarHeight: appBarHeight,
-           ),
-          ),
-          Positioned(
-            top: _sizeWidth / 1.8,
+            top: _sizeWidth *0.3,
             right: 0,
             left: 0,
             bottom: 0,
@@ -84,39 +68,49 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        CovidStatisticsViewer(
-                            title: '격리해제',
-                            addedCount: DataUtils.numFormat(1040),
-                            totalCount: DataUtils.numFormat(16532),
-                            upDown: ArrowDirection.UP),
-                        CovidStatisticsViewer(
-                            title: '검사 중',
-                            addedCount: DataUtils.numFormat(3341.0),
-                            totalCount: DataUtils.numFormat(285734),
-                            upDown: ArrowDirection.DOWN),
-                        CovidStatisticsViewer(
-                            title: '사망자',
-                            addedCount: DataUtils.numFormat(2),
-                            totalCount: DataUtils.numFormat(2039),
-                            upDown: ArrowDirection.MIDDLE),
-                      ],
-                    ),
+                    Obx(() => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            CovidStatisticsViewer(
+                                title: '확진자',
+                                addedCount: controller
+                                    .todayData.value.calcDecideCnt
+                                    .toString(),
+                                totalCount: controller.todayData.value.decideCnt
+                                    .toString(),
+                                upDown: controller.calculrateUpDown(
+                                    controller.todayData.value.calcDecideCnt)),
+                            CovidStatisticsViewer(
+                                title: '검사 중',
+                                addedCount: controller.todayData.value.calcExamCnt.toString(),
+                                totalCount: controller.todayData.value.examCnt.toString(),
+                                upDown: controller.calculrateUpDown(
+                                    controller.todayData.value.calcExamCnt)),
+                            CovidStatisticsViewer(
+                                title: '사망자',
+                                addedCount: controller
+                                    .todayData.value.calcDeathCnt
+                                    .toString(),
+                                totalCount: controller.todayData.value.deathCnt
+                                    .toString(),
+                                upDown: controller.calculrateUpDown(
+                                    controller.todayData.value.calcDeathCnt)),
+                          ],
+                        )),
                     const SizedBox(
-                      height: 20,
+                      height: 22,
                     ),
                     Text(
                       '확진자 추이',
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .headline6!
-                          .copyWith(fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
                     ),
                     Expanded(
-                        child: CovidChart()),
+                        child: Obx(() => controller.weekData.value.length == 0
+                            ? Container()
+                            : CovidChart(
+                                covidDatas: controller.weekData.value,
+                          maxY: controller.maxDecideValue
+                              ))),
                   ],
                 ),
               ),

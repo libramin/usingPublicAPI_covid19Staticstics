@@ -1,22 +1,39 @@
+import 'package:covid19staticstics/model/covid_statistics_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/data_utils.dart';
+
 class CovidChart extends StatelessWidget {
-  const CovidChart({Key? key}) : super(key: key);
+
+  final List<CovidStatisticsModel> covidDatas;
+  final double maxY;
+  const CovidChart({Key? key, required this.covidDatas, required this.maxY}) : super(key: key);
+
+
 
   @override
   Widget build(BuildContext context) {
+
+    int valueX = 0;
+
     return BarChart(
       BarChartData(
         barTouchData: barTouchData,
         titlesData: titlesData,
         borderData: borderData,
-        barGroups: barGroups,
+        barGroups: covidDatas.map<BarChartGroupData>((data) {
+          return BarChartGroupData(x: valueX++,barRods: [
+            BarChartRodData(
+                toY: data.calcDecideCnt.toDouble(),gradient: _barsGradient)
+          ],showingTooltipIndicators: [0]);
+        }).toList(),
         gridData: FlGridData(show: false),
         alignment: BarChartAlignment.spaceAround,
-        maxY: 20,
+        maxY: maxY*1.5,
       ),
     );
+
   }
 
   BarTouchData get barTouchData => BarTouchData(
@@ -34,6 +51,7 @@ class CovidChart extends StatelessWidget {
         return BarTooltipItem(
           rod.toY.round().toString(),
           const TextStyle(
+            fontSize: 12,
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
@@ -48,28 +66,28 @@ class CovidChart extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    String text;
+    String text = DataUtils.simpleDayFormat(covidDatas[value.toInt()].stateDt!);
     switch (value.toInt()) {
       case 0:
-        text = '06.08';
+        text;
         break;
       case 1:
-        text = '06.08';
+        text;
         break;
       case 2:
-        text = '06.08';
+        text;
         break;
       case 3:
-        text = '06.08';
+        text;
         break;
       case 4:
-        text = '06.08';
+        text;
         break;
       case 5:
-        text = '06.08';
+        text;
         break;
       case 6:
-        text = '06.08';
+        text ;
         break;
       default:
         text = '';
@@ -114,67 +132,4 @@ class CovidChart extends StatelessWidget {
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
   );
-
-  List<BarChartGroupData> get barGroups => [
-    BarChartGroupData(
-      x: 0,
-      barRods: [
-        BarChartRodData(
-          toY: 8,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 1,
-      barRods: [
-        BarChartRodData(
-          toY: 10,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 2,
-      barRods: [
-        BarChartRodData(
-          toY: 14,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 3,
-      barRods: [
-        BarChartRodData(
-          toY: 15,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 3,
-      barRods: [
-        BarChartRodData(
-          toY: 13,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-    BarChartGroupData(
-      x: 3,
-      barRods: [
-        BarChartRodData(
-          toY: 10,
-          gradient: _barsGradient,
-        )
-      ],
-      showingTooltipIndicators: [0],
-    ),
-  ];
 }
